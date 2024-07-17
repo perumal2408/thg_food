@@ -10,7 +10,7 @@ class CarouselWidget extends StatefulWidget {
 
 class _CarouselWidgetState extends State<CarouselWidget> {
   final PageController _pageController = PageController(
-    initialPage: 1, // Start with the middle card active
+    initialPage: 0, // Start with the middle card active
   );
 
   @override
@@ -40,8 +40,8 @@ class _CarouselWidgetState extends State<CarouselWidget> {
             child: index == 0
                 ? CustomCarouselCard() // Use custom card for the first item
                 : index == 1
-                    ? FeedbackCarouselCard() // Use feedback card for the second item
-                    : WasteInfoCarouselCard(), // Use waste info card for the third item
+                    ? WasteInfoCarouselCard() // Use feedback card for the second item
+                    : FeedbackCarouselCard(), // Use waste info card for the third item
           );
         },
       ),
