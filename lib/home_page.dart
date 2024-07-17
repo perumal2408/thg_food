@@ -10,7 +10,8 @@ class HomePage extends StatelessWidget {
       builder: (BuildContext context) {
         return MealModal(
           imagePath: imagePath,
-          title: title, description: '',
+          title: title,
+          description: '',
         );
       },
     );

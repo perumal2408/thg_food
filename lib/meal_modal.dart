@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MealModal extends StatelessWidget {
@@ -22,7 +21,7 @@ class MealModal extends StatelessWidget {
 
   Widget contentBox(BuildContext context) {
     return FutureBuilder<DocumentSnapshot>(
-      future: FirebaseFirestore.instance.collection('meals').doc(title.toLowerCase()).get(),
+      future: FirebaseFirestore.instance.collection('meals').doc('2024-07-17').get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
@@ -32,7 +31,7 @@ class MealModal extends StatelessWidget {
           return Center(child: Text('No data available'));
         } else {
           var data = snapshot.data!.data() as Map<String, dynamic>;
-          var ingredients = data['ingredients'] ?? 'No ingredients available';
+          var mealData = data[title.toLowerCase()] ?? 'No data available';
 
           return Stack(
             children: <Widget>[
@@ -65,7 +64,7 @@ class MealModal extends StatelessWidget {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      'Ingredients: $ingredients',
+                      mealData,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 16),
                     ),
@@ -76,7 +75,7 @@ class MealModal extends StatelessWidget {
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        child: Text('Close', style: TextStyle(fontSize: 18, color: Colors.white)), // Set text color to white,
+                        child: Text('Close', style: TextStyle(fontSize: 18, color: Colors.white)),
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue.withOpacity(0.8),
