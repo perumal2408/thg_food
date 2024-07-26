@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'custom_carousel_card.dart';
 import 'feedback_carousel_card.dart';
 import 'waste_info_carousel_card.dart';
-
+  final PageController _pageController = PageController(
+    viewportFraction: 0.9,
+    initialPage: 0, // Start with the middle card active
+  );
 class CarouselWidget extends StatefulWidget {
   @override
   _CarouselWidgetState createState() => _CarouselWidgetState();
 }
 
 class _CarouselWidgetState extends State<CarouselWidget> {
-  final PageController _pageController = PageController(
-    initialPage: 0, // Start with the middle card active
-  );
+
 
   @override
   Widget build(BuildContext context) {

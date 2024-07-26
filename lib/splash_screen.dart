@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'package:thg_food/main.dart';
+import 'login_page.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -9,7 +8,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -18,11 +16,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   _startAnimation() async {
     await Future.delayed(Duration(milliseconds: 500));
-    setState(() {
-    });
+    setState(() {});
     await Future.delayed(Duration(seconds: 2));
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => MainPage(),
+      builder: (context) => LoginPage(),
     ));
   }
 

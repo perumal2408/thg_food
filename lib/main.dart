@@ -27,6 +27,7 @@ class FoodApp extends StatelessWidget {
     );
   }
 }
+
 // Your HomePage, SplashScreen, and other widgets...
 
 class MainPage extends StatefulWidget {
@@ -50,7 +51,6 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       body: _widgetOptions.elementAt(_selectedIndex),
     );
   }

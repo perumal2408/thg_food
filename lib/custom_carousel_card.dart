@@ -22,7 +22,9 @@ class _CustomCarouselCardState extends State<CustomCarouselCard> {
     // Example: Update number of ratings and average rating
     setState(() {
       _numberOfRatings += 1;
-      _averageRating = (_averageRating * (_numberOfRatings - 1) + _currentRating) / _numberOfRatings;
+      _averageRating =
+          (_averageRating * (_numberOfRatings - 1) + _currentRating) /
+              _numberOfRatings;
     });
   }
 
@@ -40,7 +42,8 @@ class _CustomCarouselCardState extends State<CustomCarouselCard> {
         child: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/indian-food.jpg'), // Replace with your image path
+              image: AssetImage(
+                  'assets/indian-food.jpg'), // Replace with your image path
               fit: BoxFit.cover, // Image fitting inside the container
             ),
           ),
@@ -60,45 +63,26 @@ class _CustomCarouselCardState extends State<CustomCarouselCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Top part with ratings and number of people voted
-                    Column(
-                      children: [
-                        Text(
-                          'Rating: ${_averageRating.toStringAsFixed(1)}',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          '$_numberOfRatings people voted',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                      ],
-                    ),
-                    // Middle part with star rating icons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(5, (index) {
-                        return IconButton(
-                          icon: Icon(
-                            index < _currentRating ? Icons.star : Icons.star_border,
-                            color: Colors.amber,
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment
+                            .center, // Center the column vertically
+                        crossAxisAlignment: CrossAxisAlignment
+                            .center, // Center the column horizontally
+                        children: [
+                          Text(
+                            'Rating: ${_averageRating.toStringAsFixed(1)}',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
                           ),
-                          onPressed: () {
-                            _rateFood(index + 1.0);
-                          },
-                        );
-                      }),
-                    ),
-                    // Bottom part with submit button
-                    ElevatedButton(
-                      onPressed: _submitRating,
-                      child: Text('Rate'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black,
-                        backgroundColor: Colors.amber,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 4,
+                          SizedBox(height: 1),
+                          Text(
+                            '$_numberOfRatings people voted',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ],
                       ),
                     ),
                   ],
