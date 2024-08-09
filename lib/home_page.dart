@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart'; // For date formatting
 import 'carousel_widget.dart';
 import 'account_page.dart';
 import 'meal_modal.dart';
 
 class HomePage extends StatelessWidget {
-  void _showMealModal(BuildContext context, String imagePath, String title) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MealModal(
-          imagePath: imagePath,
-          title: title,
-          description: '',
-        );
-      },
-    );
+  Stream<double> _getAverageRatingStream(String mealTitle) {
+    // Format date as 'yyyy-MM-dd'
+    String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    return FirebaseFirestore.instance
+        .collection('meals')
+        .doc(formattedDate)
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.exists) {
+        var data = snapshot.data() as Map<String, dynamic>?;
+        if (data != null) {
+          // Get the average rating, defaulting to 0.0 if not available
+          double averageRating = data['${mealTitle.toLowerCase()}_averageRating']?.toDouble() ?? 0.0;
+          return averageRating;
+        }
+      }
+      return 0.0;
+    });
   }
 
   @override
@@ -44,104 +54,118 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-     body: Padding(
-  padding: const EdgeInsets.all(16.0), // Add padding around the Column
-  child: Column(
-    children: [
-      CarouselWidget(),
-      Expanded(
-        child: ListView(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           children: [
-            GestureDetector(
-              onTap: () {
-                _showMealModal(
-                  context,
-                  'assets/breakfast.png',
-                  'Breakfast',
-                );
-              },
-              child: Card(
-                color: Color.fromARGB(255, 255, 255, 255),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/breakfast.png'),
-                    ),
-                    title: Text('Breakfast'),
-                    subtitle: Text('Start your day with a healthy breakfast.'),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                _showMealModal(
-                  context,
-                  'assets/lunch.png',
-                  'Lunch',
-                );
-              },
-              child: Card(
-                color: Color.fromARGB(255, 255, 255, 255),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/lunch.png'),
-                    ),
-                    title: Text('Lunch'),
-                    subtitle: Text('Enjoy a delicious lunch.'),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            GestureDetector(
-              onTap: () {
-                _showMealModal(
-                  context,
-                  'assets/dinner.png',
-                  'Dinner',
-                );
-              },
-              child: Card(
-                color: Color.fromARGB(255, 255, 255, 255),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 30,
-                      backgroundImage: AssetImage('assets/dinner.png'),
-                    ),
-                    title: Text('Dinner'),
-                    subtitle: Text('Relax with a delightful dinner.'),
-                  ),
-                ),
+            CarouselWidget(),
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildMealCard(context, 'assets/breakfast.png', 'Breakfast'),
+                  SizedBox(height: 10),
+                  _buildMealCard(context, 'assets/lunch.png', 'Lunch'),
+                  SizedBox(height: 10),
+                  _buildMealCard(context, 'assets/dinner.png', 'Dinner'),
+                ],
               ),
             ),
           ],
         ),
       ),
-    ],
-  ),
-),
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: Colors.white,
+    );
+  }
+
+  Widget _buildMealCard(BuildContext context, String imagePath, String title) {
+    return StreamBuilder<double>(
+      stream: _getAverageRatingStream(title),
+      builder: (context, snapshot) {
+        double averageRating = snapshot.data ?? 0.0;
+        Color ratingColor = averageRating < 3 ? Colors.red : Colors.green;
+
+        return GestureDetector(
+          onTap: () {
+            _showMealModal(
+              context,
+              imagePath,
+              title,
+            );
+          },
+          child: Card(
+            color: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            elevation: 4,
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: 10,
+                    top: 10,
+                    child: Text(
+                      averageRating.toStringAsFixed(1),
+                      style: TextStyle(
+                        color: ratingColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  ListTile(
+                    leading: Hero(
+                      tag: 'hero-${title.toLowerCase()}', // Unique tag for each meal
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundImage: AssetImage(imagePath),
+                      ),
+                    ),
+                    title: Text(title),
+                    subtitle: Text('Enjoy a delicious $title.'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showMealModal(BuildContext context, String imagePath, String title) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return MealModal(
+            imagePath: imagePath,
+            title: title,
+            description: '', // Pass any additional description here if needed
+          );
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(0.0, 1.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+          var tween = Tween(begin: begin, end: end);
+          var offsetAnimation =
+              animation.drive(tween.chain(CurveTween(curve: curve)));
+
+          var scaleTween = Tween(begin: 0.5, end: 1.0);
+          var scaleAnimation =
+              animation.drive(scaleTween.chain(CurveTween(curve: curve)));
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: ScaleTransition(
+              scale: scaleAnimation,
+              child: child,
+            ),
+          );
+        },
+      ),
     );
   }
 }
