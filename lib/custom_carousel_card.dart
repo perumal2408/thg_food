@@ -1,31 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CustomCarouselCard extends StatefulWidget {
+  final String mealType;
+
+  CustomCarouselCard({required this.mealType});
+
   @override
   _CustomCarouselCardState createState() => _CustomCarouselCardState();
 }
 
 class _CustomCarouselCardState extends State<CustomCarouselCard> {
-  double _currentRating = 0;
-  int _numberOfRatings = 100; // Example number of people voted
-  double _averageRating = 4.0; // Example average rating
+  double _averageRating = 0.0;
+  int _numberOfRatings = 0;
+  bool _isLoading = true;
 
-  void _rateFood(double rating) {
-    setState(() {
-      _currentRating = rating;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fetchMealData();
   }
 
-  void _submitRating() {
-    // Handle the rating submission logic here
-    print('User rated: $_currentRating stars');
-    // Example: Update number of ratings and average rating
-    setState(() {
-      _numberOfRatings += 1;
-      _averageRating =
-          (_averageRating * (_numberOfRatings - 1) + _currentRating) /
-              _numberOfRatings;
-    });
+  Future<void> _fetchMealData() async {
+    try {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('meals')
+          .doc(widget.mealType)
+          .get();
+
+      if (snapshot.exists) {
+        var data = snapshot.data() as Map<String, dynamic>;
+        var ratingCount = data['rating_count'] ?? 0;
+        var totalRating = data['total_rating'] ?? 0.0;
+
+        setState(() {
+          _numberOfRatings = ratingCount;
+          _averageRating = ratingCount > 0 ? totalRating / ratingCount : 0.0;
+          _isLoading = false;
+        });
+      } else {
+        print('No document found for ${widget.mealType}');
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -57,35 +81,35 @@ class _CustomCarouselCardState extends State<CustomCarouselCard> {
                 ),
               ),
               // Content inside the card
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Top part with ratings and number of people voted
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment
-                            .center, // Center the column vertically
-                        crossAxisAlignment: CrossAxisAlignment
-                            .center, // Center the column horizontally
-                        children: [
-                          Text(
-                            'Rating: ${_averageRating.toStringAsFixed(1)}',
-                            style: TextStyle(
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _isLoading
+                          ? CircularProgressIndicator()
+                          : Text(
+                              'Rating: ${_averageRating.toStringAsFixed(1)}',
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          SizedBox(height: 1),
-                          Text(
-                            '$_numberOfRatings people voted',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                                color: _averageRating < 3
+                                    ? Colors.red
+                                    : Colors.green,
+                              ),
+                            ),
+                      SizedBox(height: 4),
+                      _isLoading
+                          ? Container()
+                          : Text(
+                              '$_numberOfRatings people voted',
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                    ],
+                  ),
                 ),
               ),
             ],

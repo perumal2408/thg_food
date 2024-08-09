@@ -24,21 +24,6 @@ class AccountPage extends StatelessWidget {
               subtitle: Text('11740@example.com'),
             ),
             ListTile(
-              leading: Icon(Icons.email),
-              title: Text('Email'),
-              subtitle: Text('laxman@gmail.com'),
-            ),
-            ListTile(
-              leading: Icon(Icons.phone),
-              title: Text('Phone'),
-              subtitle: Text('8608354649'),
-            ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Address'),
-              subtitle: Text('206 d , medavakkam , vadakkupattu , chennai'),
-            ),
-            ListTile(
               leading: Icon(Icons.settings),
               title: Text('Settings'),
             ),
