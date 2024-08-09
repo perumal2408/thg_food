@@ -1,42 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:thg_food/carousel_widget.dart';
-import 'custom_carousel_card.dart';
+import 'carousel_widget.dart';
 import 'account_page.dart';
 import 'meal_modal.dart';
 
 class HomePage extends StatelessWidget {
   void _showMealModal(BuildContext context, String imagePath, String title) {
-    Navigator.of(context).push(
-      PageRouteBuilder(
-        opaque: false,
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return MealModal(
-            imagePath: imagePath,
-            title: title,
-            description: '', // Pass any additional description here if needed
-          );
-        },
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 1.0);
-          const end = Offset.zero;
-          const curve = Curves.easeInOut;
-          var tween = Tween(begin: begin, end: end);
-          var offsetAnimation =
-              animation.drive(tween.chain(CurveTween(curve: curve)));
-
-          var scaleTween = Tween(begin: 0.5, end: 1.0);
-          var scaleAnimation =
-              animation.drive(scaleTween.chain(CurveTween(curve: curve)));
-
-          return SlideTransition(
-            position: offsetAnimation,
-            child: ScaleTransition(
-              scale: scaleAnimation,
-              child: child,
-            ),
-          );
-        },
-      ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return MealModal(
+          imagePath: imagePath,
+          title: title,
+          description: '',
+        );
+      },
     );
   }
 
@@ -67,60 +44,104 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+     body: Padding(
+  padding: const EdgeInsets.all(16.0), // Add padding around the Column
+  child: Column(
+    children: [
+      CarouselWidget(),
+      Expanded(
+        child: ListView(
           children: [
-            CarouselWidget(),
-            Expanded(
-              child: ListView(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      _showMealModal(
-                        context,
-                        'assets/breakfast.png',
-                        'Breakfast',
-                      );
-                    },
-                    child: CustomCarouselCard(
-                      mealType:
-                          'breakfast', // Use mealType instead of documentId
+            GestureDetector(
+              onTap: () {
+                _showMealModal(
+                  context,
+                  'assets/breakfast.png',
+                  'Breakfast',
+                );
+              },
+              child: Card(
+                color: Color.fromARGB(255, 255, 255, 255),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/breakfast.png'),
                     ),
+                    title: Text('Breakfast'),
+                    subtitle: Text('Start your day with a healthy breakfast.'),
                   ),
-                  SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
-                      _showMealModal(
-                        context,
-                        'assets/lunch.png',
-                        'Lunch',
-                      );
-                    },
-                    child: CustomCarouselCard(
-                      mealType: 'lunch', // Use mealType instead of documentId
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            GestureDetector(
+              onTap: () {
+                _showMealModal(
+                  context,
+                  'assets/lunch.png',
+                  'Lunch',
+                );
+              },
+              child: Card(
+                color: Color.fromARGB(255, 255, 255, 255),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/lunch.png'),
                     ),
+                    title: Text('Lunch'),
+                    subtitle: Text('Enjoy a delicious lunch.'),
                   ),
-                  SizedBox(height: 10),
-                  GestureDetector(
-                    onTap: () {
-                      _showMealModal(
-                        context,
-                        'assets/dinner.png',
-                        'Dinner',
-                      );
-                    },
-                    child: CustomCarouselCard(
-                      mealType: 'dinner', // Use mealType instead of documentId
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            GestureDetector(
+              onTap: () {
+                _showMealModal(
+                  context,
+                  'assets/dinner.png',
+                  'Dinner',
+                );
+              },
+              child: Card(
+                color: Color.fromARGB(255, 255, 255, 255),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: AssetImage('assets/dinner.png'),
                     ),
+                    title: Text('Dinner'),
+                    subtitle: Text('Relax with a delightful dinner.'),
                   ),
-                ],
+                ),
               ),
             ),
           ],
         ),
       ),
-      backgroundColor: Colors.white,
+    ],
+  ),
+),
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
     );
   }
 }

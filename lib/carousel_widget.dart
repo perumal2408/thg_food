@@ -39,7 +39,7 @@ class _CarouselWidgetState extends State<CarouselWidget> {
               );
             },
             child: index == 0
-                ? CustomCarouselCard() // Use custom card for the first item
+                ? CustomCarouselCard(mealType: '',) // Use custom card for the first item
                 : index == 1
                     ? WasteInfoCarouselCard() // Use feedback card for the second item
                     : FeedbackCarouselCard(), // Use waste info card for the third item
