@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'custom_carousel_card.dart';
 import 'feedback_carousel_card.dart';
 import 'waste_info_carousel_card.dart';
-  final PageController _pageController = PageController(
-    viewportFraction: 0.9,
-    initialPage: 0, // Start with the middle card active
-  );
+
+final PageController _pageController = PageController(
+  viewportFraction: 0.9,
+  initialPage: 0, // Start with the first card active
+);
+
 class CarouselWidget extends StatefulWidget {
   @override
   _CarouselWidgetState createState() => _CarouselWidgetState();
 }
 
 class _CarouselWidgetState extends State<CarouselWidget> {
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +20,7 @@ class _CarouselWidgetState extends State<CarouselWidget> {
       color: Color.fromARGB(255, 255, 255, 255),
       child: PageView.builder(
         controller: _pageController,
-        itemCount: 3,
+        itemCount: 2, // Only two items now
         itemBuilder: (context, index) {
           return AnimatedBuilder(
             animation: _pageController,
@@ -38,11 +37,10 @@ class _CarouselWidgetState extends State<CarouselWidget> {
                 ),
               );
             },
+            // Display different carousel cards based on the index
             child: index == 0
-                ? CustomCarouselCard(mealType: '',) // Use custom card for the first item
-                : index == 1
-                    ? WasteInfoCarouselCard() // Use feedback card for the second item
-                    : FeedbackCarouselCard(), // Use waste info card for the third item
+                ? WasteInfoCarouselCard() // Waste info card for the first item
+                : FeedbackCarouselCard(), // Feedback card for the second item
           );
         },
       ),

@@ -19,7 +19,9 @@ class HomePage extends StatelessWidget {
         var data = snapshot.data() as Map<String, dynamic>?;
         if (data != null) {
           // Get the average rating, defaulting to 0.0 if not available
-          double averageRating = data['${mealTitle.toLowerCase()}_averageRating']?.toDouble() ?? 0.0;
+          double averageRating =
+              data['${mealTitle.toLowerCase()}_averageRating']?.toDouble() ??
+                  0.0;
           return averageRating;
         }
       }
@@ -29,6 +31,9 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get today's date in a readable format
+    DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now());
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -57,8 +62,18 @@ class HomePage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CarouselWidget(),
+            SizedBox(height: 20),
+            Text(
+              "Today's Meals",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10),
             Expanded(
               child: ListView(
                 children: [
@@ -78,26 +93,40 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildMealCard(BuildContext context, String imagePath, String title) {
-    return StreamBuilder<double>(
-      stream: _getAverageRatingStream(title),
-      builder: (context, snapshot) {
-        double averageRating = snapshot.data ?? 0.0;
-        Color ratingColor = averageRating < 3 ? Colors.red : Colors.green;
+  return StreamBuilder<double>(
+    stream: _getAverageRatingStream(title),
+    builder: (context, snapshot) {
+      double averageRating = snapshot.data ?? 0.0;
+      Color ratingColor = averageRating < 3 ? Colors.red : Colors.green;
 
-        return GestureDetector(
-          onTap: () {
-            _showMealModal(
-              context,
-              imagePath,
-              title,
-            );
-          },
-          child: Card(
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
+      return GestureDetector(
+        onTap: () {
+          _showMealModal(
+            context,
+            imagePath,
+            title,
+          );
+        },
+        child: Card(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          elevation: 4,
+          shadowColor: Color.fromARGB(59, 0, 0, 0).withOpacity(0.2), // Shadow color
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(111, 0, 0, 0).withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 10,
+                  offset: Offset(0, 0), // Shadow in all directions
+                ),
+              ],
               borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
             ),
-            elevation: 4,
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Stack(
@@ -129,10 +158,11 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
 
   void _showMealModal(BuildContext context, String imagePath, String title) {
     Navigator.of(context).push(
